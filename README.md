@@ -17,8 +17,20 @@
 - 业务模块切换与基础列表展示
 - 新增记录
 - 基于状态的流程推进
+- 异常反馈、巡检记录附件：上传（进度展示、失败重试）、列表（名称/大小/上传时间）、下载与删除
 - `/api/health` 健康检查
 - Vite 开发代理和前后端分离结构
+
+## 附件接口
+
+附件文件存储在 `uploads/` 目录（已 gitignore），元数据与业务数据一样保存在内存中，二进制不进入 JSON 字段。
+
+- `POST /api/:resource/:id/attachments?filename=原始文件名`：请求体为文件二进制，`Content-Type` 为文件 MIME。仅 `reports`、`inspections` 支持；限图片（jpg/png/webp/gif）、视频（mp4/mov）、文档（pdf/txt/md/doc/docx/xls/xlsx），单文件 ≤ 10MB，单条记录 ≤ 9 个
+- `GET /api/:resource/:id/attachments`：附件元数据列表
+- `GET /api/:resource/:id/attachments/:attachmentId/download`：下载附件
+- `DELETE /api/:resource/:id/attachments/:attachmentId`：删除附件
+
+上传先写入临时文件，完成后再改名入库；上传中断或服务重启时临时文件会被清理。记录删除时其附件文件一并删除。
 
 ## 启动
 
